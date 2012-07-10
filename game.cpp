@@ -2626,6 +2626,14 @@ unsigned char game::light_level()
   if (ret > 10)
    ret = 10;
  }
+ int torch = u.active_item_charges(itm_lit_torch);
+ if (ret < 10 && torch > 0){
+  ret = torch/10-rand()%3;
+  if (ret > 10){
+   ret = 10;
+  }
+ }
+
  if (ret < 8 && u.has_active_bionic(bio_flashlight))
   ret = 8;
  if (ret < 4 && u.has_artifact_with(AEP_GLOW))

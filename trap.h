@@ -32,6 +32,7 @@ enum trap_id {
  tr_boobytrap,
  tr_temple_flood,
  tr_temple_toggle,
+ tr_chair,
  num_trap_types
 };
 
@@ -60,6 +61,7 @@ struct trapfunc {
  void boobytrap		(game *g, int x, int y);
  void temple_flood	(game *g, int x, int y);
  void temple_toggle	(game *g, int x, int y);
+ void chair (game *g, int x, int y);
 };
 
 struct trapfuncm {
@@ -83,6 +85,7 @@ struct trapfuncm {
  void portal	(game *g, monster *z, int x, int y) { };
  void ledge	(game *g, monster *z, int x, int y);
  void boobytrap (game *g, monster *z, int x, int y);
+ void chair (game *g, monster *z, int x, int y);
 };
 
 struct trap {

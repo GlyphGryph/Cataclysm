@@ -4112,7 +4112,9 @@ void map::draw_map(oter_id terrain_type, oter_id t_north, oter_id t_east,
   place_items(mi_office,       60,  2,  7,  7, 12,    false, 0);
   place_items(mi_office,       60,  9, 10, 18, 12,    false, 0);
   place_items(mi_office,       70, 14, 14, 18, 21,    false, 0);
-  place_items(mi_vault,        45,  3, 15, 11, 20,    false, 0);
+  place_items(mi_vault,        65,  3, 17, 3, 18,    false, 0);
+  place_items(mi_vault_cash,   99,  3, 15, 11, 16,    false, 0);
+  place_items(mi_vault_cash,   99,  3, 19, 11, 20,    false, 0);
 
   if (terrain_type == ot_bank_east)
    rotate(1);

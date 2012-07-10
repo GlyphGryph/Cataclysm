@@ -38,6 +38,30 @@ void trapfuncm::beartrap(game *g, monster *z, int x, int y)
  g->m.add_item(x, y, g->itypes[itm_beartrap], g->turn);
 }
 
+void trapfunc::chair(game *g, int x, int y)
+{
+  if(g->u.has_trait(PF_PARKOUR)){
+    g->add_msg("You leap over the chair.");
+  }
+  else{
+    g->add_msg("You climb over the chair.");
+    g->u.moves -= 40;
+  }
+}
+
+void trapfuncm::chair(game *g, monster *z, int x, int y)
+{
+ int t;
+ if (g->u_see(z, t))
+  g->add_msg("The %s stumbles over the chair!", z->name().c_str());
+ else
+  g->sound(x, y, 12, "You hear something topple to the floor.");
+ if (z->hurt(rng(3, 6)))
+  g->kill_mon(g->mon_at(x, y));
+ else
+  z->moves -= 120;
+}
+
 void trapfunc::board(game *g, int x, int y)
 {
  g->add_msg("You step on a spiked board!");

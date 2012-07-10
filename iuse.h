@@ -98,6 +98,12 @@ class iuse
   void vortex		(game *g, player *p, item *it, bool t);
   void dog_whistle	(game *g, player *p, item *it, bool t);
   void vacutainer	(game *g, player *p, item *it, bool t);
+  void light_torch (game *g, player *p, item *it, bool t);
+  void douse_torch (game *g, player *p, item *it, bool t);
+  void strum (game *g, player *p, item *it, bool t);
+  void bang (game *g, player *p, item *it, bool t);
+  void burn_cash (game *g, player *p, item *it, bool t);
+  void flip_coin (game *g, player *p, item *it, bool t);
 // MACGUFFINS
   void mcg_note		(game *g, player *p, item *it, bool t);
 // ARTIFACTS
@@ -111,7 +117,8 @@ class iuse
   void growth		(game *g, player *p, item *it, bool t);
   void water		(game *g, player *p, item *it, bool t);
   void lava		(game *g, player *p, item *it, bool t);
-  
+ private:
+  bool light_from_anything(game *g, player *p);
 };
 
 #endif

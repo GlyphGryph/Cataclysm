@@ -117,5 +117,8 @@ traps.push_back(new trap(id, sym, color, name, visibility, avoidance,\
  TRAP("",			'^',	c_white,	99, 99, 99,
 	&trapfunc::temple_toggle,	&trapfuncm::none,
 	itm_null, NULL);
-
+//	Name			Symbol	Color		Vis Avd Diff
+ TRAP("upright chair",		'h',	c_red,		 0,  9,  0,
+	&trapfunc::chair,	&trapfuncm::chair,
+	itm_chair, NULL);
 }

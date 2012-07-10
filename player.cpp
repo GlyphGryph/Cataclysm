@@ -3876,11 +3876,40 @@ bool player::wear(game *g, char let)
   g->add_msg("You can't wear that, it's made of wool!");
   return false;
  }
- if (armor->covers & mfb(bp_head) && encumb(bp_head) != 0) {
-  g->add_msg("You can't wear a%s helmet!",
-             wearing_something_on(bp_head) ? "nother" : "");
+
+ //GlyphGryphs encumbrance mod
+ if (armor->covers & mfb(bp_head) && encumb_with(bp_head,armor) > 4) {
+  g->add_msg("You simply cannot fit that much stuff on your head. The idea is preposterous.");
   return false;
  }
+ //Adds a hard cap of 10 encumbrance to any body part
+ for (body_part i = bp_head; i < num_bp; i = body_part(i + 1)) {
+  if(armor->covers & mfb(i) && encumb_with(i,armor)>10){
+    g->add_msg("You simply cannot wear that much stuff. The idea is preposterous.");
+    return false;
+  }
+ }
+ if ((armor->covers & mfb(bp_head) && to_wear->has_flag(IF_BULKY)) && wearing_bulky_on(bp_head)){
+  g->add_msg("You can't wear another helmet!");
+  return false;
+ }
+ if (armor->covers & mfb(bp_torso) && to_wear->has_flag(IF_BULKY) && wearing_bulky_on(bp_torso)){
+  g->add_msg("You can't figure out how to put it on when combined with what you are already wearing.");
+  return false;
+ }
+ if (armor->covers & mfb(bp_legs) && to_wear->has_flag(IF_BULKY) && wearing_bulky_on(bp_legs)){
+  g->add_msg("You can't figure out how to put it on when combined with what you are already wearing.");
+  return false;
+ }
+ if (armor->covers & mfb(bp_hands) && to_wear->has_flag(IF_BULKY) && wearing_bulky_on(bp_hands)){
+  g->add_msg("You can't figure out how to put in on when combined with what you are already wearing.");
+  return false;
+ }
+ if (armor->covers & mfb(bp_feet) && to_wear->has_flag(IF_BULKY) && wearing_bulky_on(bp_feet)){
+  g->add_msg("You can't figure out how to put in on when combined with what you are already wearing.");
+  return false;
+ }
+ //end GlyphGryph's encumbrance mod
  if (armor->covers & mfb(bp_hands) && has_trait(PF_WEBBED)) {
   g->add_msg("You cannot put %s over your webbed hands.", armor->name.c_str());
   return false;
@@ -4274,7 +4303,49 @@ int player::warmth(body_part bp)
  }
  return ret;
 }
+ //GlyphGryph's Addition
+ //Checks what the target areas encumbrance would be after a piece of clothing is added
+ int player::encumb_with(body_part bp, it_armor* new_armor){
+  int ret = 0;
+  int layers = 0;
+  it_armor* armor;
 
+  if (new_armor->id != itm_glasses_eye) {
+   if (new_armor->covers & mfb(bp) ||
+       (bp == bp_torso && (new_armor->covers & mfb(bp_arms)))) {
+    ret += new_armor->encumber;
+    if (new_armor->encumber >= 0 || bp != bp_torso)
+     layers++;
+   }
+  }
+  
+  for (int i = 0; i < worn.size(); i++) {
+   if (!worn[i].is_armor()){
+    debugmsg("%s::encumb hit a non-armor item at worn[%d] (%s)", name.c_str(),
+             i, worn[i].tname().c_str());
+   }
+   if (worn[i].type->id != itm_glasses_eye) {
+    armor = dynamic_cast<it_armor*>(worn[i].type);
+    if (armor->covers & mfb(bp) ||
+        (bp == bp_torso && (armor->covers & mfb(bp_arms)))) {
+     ret += armor->encumber;
+     if (armor->encumber >= 0 || bp != bp_torso)
+      layers++;
+    }
+   }
+  }
+  
+
+  if (layers > 1)
+   ret += (layers - 1) * (bp == bp_torso ? .5 : 2);// Easier to layer on torso
+  if ((bp == bp_head  && has_bionic(bio_armor_head))  ||
+      (bp == bp_torso && has_bionic(bio_armor_torso)) ||
+      (bp == bp_legs  && has_bionic(bio_armor_legs)))
+   ret += 2;
+  return ret;
+ }
+
+ //End GlyphGryph's Addition
 int player::encumb(body_part bp)
 {
  int ret = 0;
@@ -4522,6 +4593,19 @@ int player::resist(body_part bp)
  }
  return ret;
 }
+
+//GlyphGryph's Addition
+//Checks to see if a bulky object is being worn on this body part
+bool player::wearing_bulky_on(body_part bp){
+ for (int i = 0; i < worn.size(); i++){
+  it_armor* this_armor = dynamic_cast<it_armor*>(worn[i].type);
+  if(this_armor->covers & mfb(bp) && worn[i].has_flag(IF_BULKY)){
+   return true;
+  }
+ }
+ return false;
+}
+//End GlyphGryph's Addition
 
 bool player::wearing_something_on(body_part bp)
 {

@@ -47,7 +47,12 @@ enum items_location {
 // Shopkeeps &c
  mi_npc_hacker,
  mi_trader_avoid,
- num_itloc
+ num_itloc,
+ //GlyphGryphs additions
+ mi_weight_set,
+ mi_drum_kit,
+ mi_vault_cash,
+ //end additions
 };
 
 // This is used only for monsters; they get a list of items_locations, and

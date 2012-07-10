@@ -64,6 +64,8 @@ itm_wrapper, itm_syringe, itm_rag, itm_fur, itm_leather, itm_superglue,
  itm_canister_empty, itm_gold, itm_coal, itm_petrified_eye, itm_spiral_stone,
  itm_rapier, itm_cane, itm_binoculars, itm_usb_drive, itm_pike, itm_broadsword,
  itm_mace, itm_morningstar, itm_pool_cue, itm_pool_ball, itm_candlestick,
+ itm_burnt_torch, itm_weight_plate, itm_barbell, itm_dumbell, itm_drumsticks,
+ itm_blackjack,
 // Vehicle parts
  itm_frame, itm_wheel, itm_big_wheel, itm_seat, itm_vehicle_controls,
  itm_combustion_small, itm_combustion, itm_combustion_large,
@@ -72,7 +74,7 @@ itm_wrapper, itm_syringe, itm_rag, itm_fur, itm_leather, itm_superglue,
  itm_steel_plate, itm_alloy_plate, itm_spiked_plate, itm_hard_plate,
 // Footwear
 itm_sneakers, itm_boots, itm_boots_steel, itm_boots_winter, itm_mocassins,
- itm_flip_flops, itm_dress_shoes, itm_heels, 
+ itm_flip_flops, itm_dress_shoes, itm_heels, itm_socks,
 // Legwear
 itm_jeans, itm_pants, itm_pants_leather, itm_pants_cargo, itm_pants_army,
  itm_skirt,
@@ -99,7 +101,7 @@ itm_hat_ball, itm_hat_boonie, itm_hat_cotton, itm_hat_knit, itm_hat_hunting,
  itm_helmet_army, itm_helmet_riot, itm_helmet_motor, itm_helmet_chitin,
  itm_helmet_plate, itm_tophat,
 // High-storage
-itm_backpack, itm_purse, itm_mbag, itm_fanny, itm_holster, itm_bootstrap,
+itm_backpack, itm_knapsack, itm_rucksack, itm_rigid_backpack, itm_purse, itm_mbag, itm_fanny, itm_holster, itm_bootstrap,
 // Decorative
 itm_ring, itm_necklace,
 // Ammunition
@@ -160,7 +162,8 @@ itm_lighter, itm_sewing_kit, itm_scissors, itm_hammer, itm_extinguisher,
  itm_mininuke_act, itm_pheromone, itm_portal, itm_bot_manhack, itm_bot_turret,
  itm_UPS_off, itm_UPS_on, itm_tazer, itm_mp3, itm_mp3_on, itm_vortex_stone,
  itm_dogfood, itm_boobytrap, itm_c4, itm_c4armed, itm_dog_whistle,
- itm_vacutainer, itm_welder,
+ itm_vacutainer, itm_welder, itm_sewing_machine, itm_torch, itm_lit_torch,
+ itm_cymbal, itm_guitar, itm_drum, itm_cash, itm_coins, itm_chair,
 // Bionics containers
 itm_bionics_battery,       itm_bionics_power,   itm_bionics_tools,
  itm_bionics_neuro,        itm_bionics_sensory, itm_bionics_aquatic,
@@ -237,6 +240,10 @@ IF_GRENADE,	// NPCs treat this as a grenade
 
 IF_UNARMED_WEAPON, // Counts as an unarmed weapon
 IF_NO_UNWIELD, // Impossible to unwield, e.g. bionic claws
+
+IF_BULKY,	//Prevents other bulky items from being worn on the same section.
+IF_LOUD,
+IF_FLAMING,
 
 IF_AMMO_FLAME,		// Sets fire to terrain and monsters
 IF_AMMO_INCENDIARY,	// Sparks explosive terrain
@@ -579,9 +586,8 @@ struct it_armor : public itype
           std::string pname, std::string pdes,
           char psym, nc_color pcolor, material pm1, material pm2,
           unsigned short pvolume, unsigned short pweight,
-          signed char pmelee_dam, signed char pmelee_cut, signed char pm_to_hit,
-          unsigned pitem_flags,
-
+          signed char pmelee_dam, signed char pmelee_cut, 
+          signed char pm_to_hit, unsigned pitem_flags,
           unsigned char pcovers, signed char pencumber,
           unsigned char pdmg_resist, unsigned char pcut_resist,
           unsigned char penv_resist, signed char pwarmth,
@@ -684,9 +690,8 @@ struct it_tool : public itype
          std::string pname, std::string pdes,
          char psym, nc_color pcolor, material pm1, material pm2,
          unsigned short pvolume, unsigned short pweight,
-         signed char pmelee_dam, signed char pmelee_cut, signed char pm_to_hit,
-         unsigned pitem_flags,
-
+         signed char pmelee_dam, signed char pmelee_cut, 
+         signed char pm_to_hit, unsigned pitem_flags,
          unsigned int pmax_charges, unsigned int pdef_charges,
          unsigned char pcharges_per_use, unsigned char pturns_per_charge,
          ammotype pammo, itype_id prevert_to,

@@ -10,6 +10,13 @@
 
 #define RADIO_PER_TURN 25 // how many characters per turn of radio
 
+/* Just a helpful function to check if there's a fire source nearby. */
+bool iuse::light_from_anything(game *g, player *p)
+{
+  inventory map_inv;
+  map_inv.form_from_map(g, point(g->u.posx, g->u.posy), PICKUP_RANGE);
+}
+
 /* To mark an item as "removed from inventory", set its invlet to 0
    This is useful for traps (placed on ground), inactive bots, etc
  */
@@ -932,6 +939,8 @@ void iuse::light_on(game *g, player *p, item *it, bool t)
  }
 }
 
+
+
 void iuse::water_purifier(game *g, player *p, item *it, bool t)
 {
  char ch = g->inv("Purify what?");
@@ -1281,6 +1290,11 @@ void iuse::set_trap(game *g, player *p, item *it, bool t)
   message << "You set the board trap on the " << g->m.tername(posx, posy) <<
              ", nails facing up.";
   type = tr_nailboard;
+  practice = 2;
+  break;
+ case itm_chair:
+  message << "You stand the chair up.";
+  type = tr_chair;
   practice = 2;
   break;
  case itm_tripwire:
@@ -2051,7 +2065,151 @@ void iuse::vacutainer(game *g, player *p, item *it, bool t)
 
  it->put_in(blood);
 }
- 
+
+//GlyphGryph's functions, non-torch
+void iuse::light_torch(game *g, player *p, item *it, bool t)
+{
+ if(p->has_amount(itm_torch, 1)) {
+   g->add_msg("You touch the torch against one you already have, lighting it.");
+ }
+ else if(p->has_amount(itm_lighter, 1)) {
+   p->use_charges(itm_lighter, 1);
+   g->add_msg("You light the torch with your lighter.");
+ }
+ else{
+  g->add_msg("You need a lighter or an already lit torch!");
+  return;
+ }
+ p->moves -= 150;
+ it->make(g->itypes[itm_lit_torch]);
+ it->active=true;
+}
+
+void iuse::douse_torch(game *g, player *p, item *it, bool t)
+{
+ if(t){} else {
+  g->add_msg("Your torch sputters and goes out.");
+  it->make(g->itypes[itm_torch]);
+  it->active=false;
+ }
+}
+ void iuse::strum(game *g, player *p, item *it, bool t){
+  int dirx=p->posx;
+  int diry=p->posy;
+  p->moves = -200;
+  p->add_morale(MORALE_MUSIC, 10, 30);
+  std::string sound = "";
+  int r_num=rng(1,100);
+  if(r_num <= 15){sound = "pluck a couple strings.";}
+  else if(r_num <= 28){sound = "strum a few chords.";}
+  else if(r_num <= 41){sound = "play a short melody.";}
+  else if(r_num <= 54){sound = "run your fingers up and down a scale.";}
+  else if(r_num <= 67){sound = "finger a couple notes.";}
+  else if(r_num <= 77){sound = "play a catchy tune.";}
+  else if(r_num <= 87){sound = "pick your way through a popular riff.";}
+  else if(r_num <= 97){sound = "let loose a few sweet harmonies.";}
+  else if(r_num <= 100){sound = "arpeggiate the apocalypse. Success!";}
+  g->sound(dirx, diry, 16, ("You "+sound).c_str());
+ }
+
+ void iuse::bang(game *g, player *p, item *it, bool t){
+  int dirx=p->posx;
+  int diry=p->posy;
+  p->moves = -200;
+  std::string sound = "";
+  int volume=0;
+  int morale_bonus=2;
+  int morale_bonus_cap=10;
+  int r_num=rng(1,100);
+  switch (it->type->id) {
+   case itm_drum:
+    morale_bonus=5;
+    morale_bonus_cap=20;
+    sound = "You bang your hand against the drum a couple times.";
+    volume=23;
+    if(p->has_item(itm_drumsticks)){
+     morale_bonus=10;
+     morale_bonus_cap=30;
+     volume=34;
+     if(r_num <= 10){sound = "You snap your drumstick against the tarp with a loud crack.";}
+     else if(r_num <= 20){sound = "You chill out to a simple rythm.";}
+     else if(r_num <= 35){sound = "Ba-dum ba-dum bap da-dum BAM.";}
+     else if(r_num <= 50){sound = "You lay down a nice beat.";}
+     else if(r_num <= 65){sound = "A quick drumroll, rising to a crescendo.";}
+     else if(r_num <= 76){sound = "You play a fast drum roll.";}
+     else if(r_num <= 87){sound = "Your drumsticks fly as you make enough of a racket to raise the dead.";}
+     else if(r_num <= 100){sound = "Pa rum pum pum pum.";}
+    }
+    break;
+   case itm_cymbal:
+    morale_bonus=5;
+    morale_bonus_cap=20;
+    sound="CRASH!";
+    volume=34;
+    if(p->has_amount(itm_cymbal,2)){
+     morale_bonus=8;
+     morale_bonus_cap=26;
+     sound="You bring your cymbals together with a resounding crash!";
+     volume=46;
+    }
+    break;
+   default:
+    volume=15;
+    if(r_num <= 50){sound="Bang!";}
+    else if(r_num <= 80){sound="Ting!";}
+    else if(r_num <= 100){sound="Clang!";}
+  }
+  p->add_morale(MORALE_MUSIC, morale_bonus, morale_bonus_cap);
+  g->sound(dirx, diry, volume, (sound.c_str()));  
+ }
+
+ void iuse::burn_cash(game *g, player *p, item *it, bool t){
+  if (!p->has_amount(itm_lighter, 1)) {
+   g->add_msg("You need a lighter!");
+   return;
+  }
+  p->use_charges(itm_lighter, 1);
+  p->moves = -200;
+  p->add_morale(MORALE_FEELING_GOOD, 1, 10);
+  int r_chance=rng(0,5);
+  if(r_chance>0){
+   g->add_msg("You peel a bill from the pile, and light a corner. The flame crawls up the the worthless money, and you get a strange sense of joy watching it go up.");
+  }
+  else{
+   g->add_msg("You peel a bill from the pile, and light a corner. The flame singes your fingers, and you let it go. It's caught by the wind, fluttering a bit before coming to rest, soon leaving nothing but ashes. You aren't sure why, but you feel a perverse sense of glee as you watch it burn.");
+   int r_x=rng(-3,3);
+   int r_y=rng(-3,3);
+   int tx = p->posy;
+   int ty = p->posy;
+   if (g->m.add_field(g, tx, ty, fd_fire, 1))
+    g->m.field_at(tx, ty).age = 1400;
+  }
+ }
+
+ void iuse::flip_coin(game *g, player *p, item *it, bool t){
+   p->moves = -100;
+   int r_chance=rng(0,100);
+   g->add_msg("You give the coin a flip, and it spins through the air...");
+   if(0<r_chance && 50>r_chance){
+     g->add_msg("You catch the coin, and look down. Heads.");
+   }
+   else if(50<r_chance && 100>r_chance){
+     g->add_msg("You catch the coin, and look down. Tails.");
+   }
+   else if(0==r_chance){
+     p->add_morale(MORALE_FEELING_BAD, -10,-100);
+     g->add_msg("You catch a momentary glimpse of nightmarish potential, a world bisecting your own, a world more monstrous than even this world is now. And it's pushing at the boundaries of reality, just waiting for the coin to come up heads... You catch it.\n\
+     You look down, shaken, and let out a sigh of relief... Tails.");
+   }
+   else if(100==r_chance){
+     p->add_morale(MORALE_FEELING_BAD, -10,-100);
+     g->add_msg("You catch a momentary glimpse of nightmarish potential, a world bisecting your own, a world more monstrous than even this world is now. And it's pushing at the boundaries of reality, just waiting for the coin to come up heads... You catch it.\n\
+     You look down, shaken, and let out a sigh of relief... Heads.");
+   }
+ }
+
+ //End GlyphGryph's Additions
+
 
 /* MACGUFFIN FUNCTIONS
  * These functions should refer to it->associated_mission for the particulars

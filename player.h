@@ -188,10 +188,12 @@ public:
  bool can_sleep(game *g);	// Checked each turn during DIS_LYING_DOWN
 
  int warmth(body_part bp);	// Warmth provided by armor &c
+ int encumb_with(body_part bp, it_armor* new_armor); //Hypothetical encumbrance from armor if a piece was added
  int encumb(body_part bp);	// Encumberance from armor &c
  int armor_bash(body_part bp);	// Bashing resistance
  int armor_cut(body_part bp);	// Cutting  resistance
  int resist(body_part bp);	// Infection &c resistance
+ bool wearing_bulky_on(body_part bp); //True if wearing a bulky object on this body part
  bool wearing_something_on(body_part bp); // True if wearing something on bp
 
  void practice(skill s, int amount);	// Practice a skill
