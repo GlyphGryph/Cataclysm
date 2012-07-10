@@ -3943,10 +3943,6 @@ bool player::wear(game *g, char let)
               (has_trait(PF_ANTENNAE) ? "antennae" : "antlers")));
   return false;
  }
- if (armor->covers & mfb(bp_feet) && wearing_something_on(bp_feet)) {
-  g->add_msg("You're already wearing footwear!");
-  return false;
- }
  g->add_msg("You put on your %s.", to_wear->tname(g).c_str());
  if (to_wear->is_artifact()) {
   it_artifact_armor *art = dynamic_cast<it_artifact_armor*>(to_wear->type);
