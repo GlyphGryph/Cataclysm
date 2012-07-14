@@ -4331,14 +4331,30 @@ int player::warmth(body_part bp)
    }
   }
   
-
   if (layers > 1)
-   ret += (layers - 1) * (bp == bp_torso ? .5 : 2);// Easier to layer on torso
-  if ((bp == bp_head  && has_bionic(bio_armor_head))  ||
-      (bp == bp_torso && has_bionic(bio_armor_torso)) ||
-      (bp == bp_legs  && has_bionic(bio_armor_legs)))
-   ret += 2;
-  return ret;
+   if ((bp == bp_feet) || (bp == bp_head)){
+    ret += (layers - 1) * .5;// Easier to layer on torso and feet
+   }
+   else{
+    ret += (layers - 1) * 2;
+   }
+// Bionics and mutation
+ if ((bp == bp_head  && has_bionic(bio_armor_head))  ||
+     (bp == bp_torso && has_bionic(bio_armor_torso)) ||
+     (bp == bp_legs  && has_bionic(bio_armor_legs)))
+  ret += 2;
+ if (has_bionic(bio_stiff) && bp != bp_head && bp != bp_mouth)
+  ret += 1;
+ if (has_trait(PF_CHITIN3) && bp != bp_eyes && bp != bp_mouth)
+  ret += 1;
+ if (has_trait(PF_SLIT_NOSTRILS) && bp == bp_mouth)
+  ret += 1;
+ if (bp == bp_hands &&
+     (has_trait(PF_ARM_TENTACLES) || has_trait(PF_ARM_TENTACLES_4) ||
+      has_trait(PF_ARM_TENTACLES_8)))
+  ret += 3;
+
+ return ret;  return ret;
  }
 
  //End GlyphGryph's Addition
@@ -4360,7 +4376,12 @@ int player::encumb(body_part bp)
   }
  }
  if (layers > 1)
-  ret += (layers - 1) * (bp == bp_torso ? .5 : 2);// Easier to layer on torso
+   if ((bp == bp_feet) || (bp == bp_head)){
+    ret += (layers - 1) * .5;// Easier to layer on torso and feet
+   }
+   else{
+    ret += (layers - 1) * 2;
+   }
  if (volume_carried() > volume_capacity() - 2 && bp != bp_head)
   ret += 3;
 
